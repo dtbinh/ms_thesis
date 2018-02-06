@@ -1,0 +1,571 @@
+\section{Inner-Loop Controller}
+\label{sec:inner_loop}
+
+The outer-loop controller computes desired attitude of the quadrotor based on position control. The inner-loop controller computes the torque required to control the quadrotor's attitude. PID control is often used as a method of attitude control. However, in this research, a more advanced control is applied for the inner-loop. In this section, a nonlinear inner-loop controller will be introduced. Firstly, dynamics with regard to the quadrotor's attitude is described. Then, a process of computing desired angular rate and torque of the quadrotor is explained. Finally, a proof of the controller's stability is stated.
+
+\subsection{Dynamics Description}
+Let \(\boldsymbol u = (u_p, u_q, u_r)\) be the torque in the body frame. Then, from the effect of rotation, the equation of moment is given with respect with the quadrotor angular velocity \({\boldsymbol \omega} = (p, q, r)\) as,\\
+\begin{equation}
+\label{eq:rotation}
+\begin{aligned}
+\boldsymbol{u} = {d \over dt}({J {\boldsymbol \omega}}) = J {\dot {\boldsymbol \omega}} -\text{Skew} (J {\boldsymbol \omega}) {\boldsymbol \omega}\\
+\end{aligned}
+\end{equation}
+where \(J\) is the inertia matrix of the quadrotor \cite{Bolandi13}. \(\text{Skew} ({\boldsymbol a}) \) is a skew-symmetric matrix, defined as, \\
+\begin{equation}
+\begin{aligned}
+\text{Skew} ({\boldsymbol a}) = 
+\begin{bmatrix}
+0 & - a_3 & a_2\\
+a_3 & 0 & - a_1\\
+-a_2 & a_1 & 0
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+By considering the symmetry of the quadrotor along each axis of body frame, the diagonal elements \(J_{xx}\), \(J_{yy}\), \(J_{zz}\) are much greater than the other elements and, the non-diagonal elements are negligible. Therefore, the inertia matrix \(J\) is approximated as a positive diagonal matrix. \\
+\begin{equation}
+\begin{aligned}
+J & \approx 
+\begin{bmatrix}
+J_{xx} & 0 & 0 \\
+0 & J_{yy} & 0 \\
+0 & 0 & J_{zz}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+Since the quadrotor attitude \({\boldsymbol \eta} = (\phi, \theta, \psi) \) is on the body frame, there is a relation between the angular velocity \({\boldsymbol \omega} = (p, q, r) \) and the derivative \( \dot{{\boldsymbol \eta}} = (\dot\phi, \dot\theta, \dot\psi)\) of the attitude, given by, \\
+\begin{equation}
+\begin{aligned}
+\begin{bmatrix}
+p\\
+q\\
+r
+\end{bmatrix}
+& =
+\begin{bmatrix}
+{\dot \phi} \\
+0 \\
+0
+\end{bmatrix}
++ {R_{x, \phi}}^{T} \left(
+\begin{bmatrix}
+0 \\
+{\dot \theta} \\
+0
+\end{bmatrix}
++ {R_{y, \theta}}^{T}
+\begin{bmatrix}
+0 \\
+0 \\
+{\dot \psi} 
+\end{bmatrix}
+\right) \\
+& =
+\begin{bmatrix}
+{\dot \phi} \\
+0 \\
+0
+\end{bmatrix}
++ 
+\begin{bmatrix}
+1 & 0    & 0 \\
+0 & \cos{\phi}	& \sin{\phi} \\
+0 & - \sin{\phi} 	& \cos{\phi}
+\end{bmatrix}
+\left(
+\begin{bmatrix}
+0 \\
+{\dot \theta} \\
+0
+\end{bmatrix}
++
+\begin{bmatrix}
+\cos{\theta}	& 0    & - \sin{\theta}\\
+0			& 1    & 0 \\
+\sin{\theta}	&0	 & \cos{\theta}
+\end{bmatrix}
+\begin{bmatrix}
+0 \\
+0 \\
+{\dot \psi} 
+\end{bmatrix}
+\right) \\
+& = 
+\begin{bmatrix}
+1 	& 0    		& -\sin{\theta}\\
+0 	& \cos{\phi}	& \sin{\phi} \cos{\theta} \\
+0	& - \sin{\phi}	& \cos{\phi} \cos{\theta}
+\end{bmatrix}
+\begin{bmatrix}
+{\dot \phi}\\
+{\dot \theta} \\
+{\dot \psi}
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+Define a transform matrix \(Z\) from the body frame into the inertial frame with respect to the quadrotor attitude \({\boldsymbol \eta}\) as,\\
+\begin{equation}
+\begin{aligned}
+Z = Z({\boldsymbol \eta}) = 
+\begin{bmatrix}
+1 	& 0    		& - \sin{\theta}\\
+0 	& \cos{\phi}	& \sin{\phi} \cos{\theta} \\
+0	& - \sin{\phi}	& \cos{\phi} \cos{\theta}
+\end{bmatrix} ^{-1}
+=
+\begin{bmatrix}
+1 & \sin{\phi} \tan{\theta}    & \cos{\phi} \tan{\theta}\\
+0 & \cos{\phi}                     & - \sin{\phi} \\
+0 & \sin{\phi} \sec{\theta} & \cos{\phi} \sec{\theta}
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+Then, from the transformation of coordinate systems, the derivative of the attitude \(\dot{\boldsymbol \eta}\) can be written with respect to \({\boldsymbol \eta}\) and \(\dot{\boldsymbol \omega}\) as, \\
+\begin{equation}
+\label{eq:z_omega}
+\begin{aligned}
+{\dot {\boldsymbol \eta}} = Z {\boldsymbol \omega}\\
+\end{aligned}
+\end{equation}
+Since the transformation matrix \(Z\) always has an inverse matrix regardless of the quadrotor attitude \({\boldsymbol \eta}\), the inverse form of the above equation is also satisfied. Therefore, the angular velocity is represented with the derivative of the attitude \(\dot{\boldsymbol \eta}\) and the transform matrix \(Z\), as the below equation.\\
+\begin{equation}
+\begin{aligned}
+\label{eq:z_inv_eta}
+{\boldsymbol \omega} = Z^{-1}{\dot {\boldsymbol \eta}} \\
+\end{aligned}
+\end{equation}
+
+
+\subsection{Computation of Derivative of the Desired Attitude}
+\label{subsec:desired_attitude}
+The inner-loop controller receives desired attitude \( {\boldsymbol \eta}_d = (\phi_d, \theta_d, \psi_d) \) from the outer-loop controller, and desired angular velocity \({\boldsymbol \omega}_d\) is computed from it. From Equation (\ref{eq:z_omega}), the desired angular velocity is given from the controller as, \\
+\begin{equation}
+\begin{aligned}
+{\boldsymbol \omega}_d = Z^{-1}{\dot {\boldsymbol \eta}_d} \\
+\end{aligned}
+\end{equation}
+With the value of the desired attitude \( {\boldsymbol \eta}_d  \), there are multiple methods to compute the derivative of the desired attitude \({\dot {\boldsymbol \eta}_d}\).
+
+First, \({\dot {\boldsymbol \eta}_d} = (\dot{\phi_d},\dot{ \theta_d}, \dot{\psi_d})\) is computed by direct differentiation of the desired attitude \({\dot {\boldsymbol \eta}}\) defined in Equation (\ref{eq:desired_attitude}). From Equation (\ref{eq:desired_attitude}), \({\dot {\boldsymbol \eta}_d}\) is computed as,
+\begin{equation}
+\begin{aligned}
+\dot{\phi}_d & = {1 \over {\sqrt{1 - {c_1}^2}}} \left( c_2 \dot{\psi} + {\sin{\psi} \over F_d} \dot{{\overline X}}_d - {\cos{\psi} \over F_d} \dot{{\overline X}}_d  - {{c_1 \dot{F}_d} \over {{F_d}^2}} \right)\\
+\dot{\theta}_d & = {1 \over {1 + {c_2}^2}} \left( - c_1 \dot{\psi} + {\cos{\psi} \over {{\overline Z}_d}} \dot{{\overline X}}_d + {\sin{\psi} \over {{\overline Z}}_d} \dot{{\overline X}}_d  +
+- {{c_2 \dot{{\overline Z}}_d } \over {{{\overline Z}_d}^2}} \right)\\
+\end{aligned}
+\end{equation}
+where \(c_1\) and \(c_2\) are defines as,
+\begin{equation}
+\begin{aligned}
+c_1  = & {{{\overline X}_d} \sin{\psi} - {{\overline Y}_d} \cos{\psi}} \over {F_d}\\
+c_2  = & {{{\overline X}_d} \cos{\psi} + {{\overline Y}_d} \sin{\psi}} \over {{\overline Z}_d}\\
+\end{aligned}
+\end{equation}
+From geometric relation, the magnitude of the thrust, \(F_d = | {\boldsymbol F}_d | \), is written as,
+\begin{equation}
+\begin{aligned}
+F_d = {{\overline Z}_d} \sec{\theta} \sec{\psi}
+\end{aligned}
+\end{equation}
+Therefore, the roll rate \(\dot {\phi}_d\) is decoupled with \(F_d\), and represented with respect only with the attitude \(\boldsymbol \eta\) and the desired thrust \(({{\overline X}_d}, {{\overline Y}_d}, {{\overline Z}_d})\), as the below equation.
+\begin{equation}
+\begin{aligned}
+\dot{\phi}_d & = {1 \over {\sqrt{1 - {c_1}^2}}} \left( c_2 \dot{\psi} + {\sin{\psi} \over F_d} \dot{{\overline X}}_d - {{\cos{\psi}} \over {F_d}} \dot{{{\overline X}}}_d  + {{c_1} \over {{F_d}^2}} \left({{\overline Z}_d} ( \dot{\phi} \sec{\phi} \tan{\phi}  + \dot{\theta} \sec{\theta} \tan{\theta} ) - \dot{{\overline Z}}_d \right) \right)\\
+\end{aligned}
+\end{equation}
+Usually, yaw is controlled as constant, or yaw rate \(\dot{\psi}_d\) is given.
+
+However, in the case that the quadrotor does not have precise measurement of its position, or the quadrotor's attitude is controlled manually, the above formulation may not be available. Therefore, an alternative computation method of desired angular velocity that uses a backward differentiation approximation can be applied. Numerically differentiated values usually have noise, and therefore, a low-pass filter is used to reduce noise. In discrete-time, let \(t_k\) be a discrete time and \({\Delta t}_k = t_k - t_{k-1}\) be a time step. Let \(u(t_k)\) be a raw value, and \(y(t_k)\) be a filtered value at time \(t_k\). Then, a first-order low-pass filter, also known as an exponentially weighted moving average filter, is given as the below equation, 
+\begin{equation}
+\label{eq:filter}
+\begin{aligned}
+y (t_{k}) = (1- a_k) u (t_{k}) - a_k y (t_{k-1})
+\end{aligned}
+\end{equation}
+where the filter parameter \(a\) is defined with respect to the filter constant \(T_f\) as,
+\begin{equation}
+\begin{aligned}
+a_k = {{{\Delta t}_k}\over{T_f + {\Delta t}_k}}
+\end{aligned}
+\end{equation}
+In the above equation, the contribution of new input \(u (t_{k}) \) decreases and becomes less noisy as the filter constant \(T_f\) becomes greater. From the first-order differentiation approximation for the time derivative, raw derivative of the desired attitude is computed as the below equation.\\
+\begin{equation}
+\label{eq:numerical_desired_derivative}
+\begin{aligned}
+{\dot {\boldsymbol \eta}_{d,raw}}  (t_{k}) = {{{\boldsymbol \eta}_d (t_{k}) - {\boldsymbol \eta}_d (t_{k-1}) }\over {{\Delta t}_k}}
+\end{aligned}
+\end{equation}
+From Equations (\ref{eq:filter}) and (\ref{eq:numerical_desired_derivative}), filtered derivative of the desired attitude is computed as the below equation.\\
+\begin{equation}
+\label{eq:filtered_desired_derivative}
+\begin{aligned}
+{\dot {\boldsymbol \eta}_d} (t_{k}) = (1- a_k ){\dot {\boldsymbol \eta}_{d,raw}} (t_{k})  - a_k {\dot {\boldsymbol \eta}_d} (t_{k-1})\\
+\end{aligned}
+\end{equation}
+In the control system, Equation (\ref{eq:filtered_desired_derivative}) is used as derivative of the desired attitude.
+
+
+\subsection{Computation of Desired Torque}
+
+In this research, the nonlinear attitude control developed by Bandyopadhyay and Chung is used \cite{Bandyopadhyay16}. In the control law, previous to the computation of desired torque, it is necessary to define reference angular velocity. Let \( {\boldsymbol \eta} = (\phi, \theta, \psi) \) be actual attitude of the quadrotor. Define reference attitude \( {\dot {\boldsymbol \eta}_r}\) as, \\
+\begin{equation}
+\label{eq:eta_r}
+\begin{aligned}
+{\dot {\boldsymbol \eta}_r} & =  {\dot {\boldsymbol \eta}_d} + \Lambda( {\boldsymbol \eta}_d - {\boldsymbol \eta}) \\
+\end{aligned}
+\end{equation}
+where \(\Lambda\) is a positive gain matrix as, \\
+\begin{equation}
+\begin{aligned}
+\Lambda = 
+\begin{bmatrix}
+\lambda_{\phi}		& 0				& 0 \\
+0				& \lambda_{\theta}	& 0 \\
+0				& 0				& \lambda_{\psi}
+\end{bmatrix}
+> 0
+\end{aligned}
+\end{equation}
+Reference angular velocity \({\boldsymbol \omega}_r \), and its derivative \( \dot{{\boldsymbol \omega}_r } \) are set as,\\
+\begin{equation}
+\begin{aligned}
+{\boldsymbol \omega}_r & = Z^{-1} {\dot {\boldsymbol \eta}_d} + Z^{-1} \Lambda ({\boldsymbol \eta}_d - {\boldsymbol \eta})  \\
+& = {\boldsymbol \omega}_d + Z^{-1} \Lambda ({\boldsymbol \eta}_d - {\boldsymbol \eta})\\
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+{\dot {\boldsymbol \omega}_r} & = {\dot {\boldsymbol \omega}_d} +  Z^{-1} \Lambda ({\dot {\boldsymbol \eta}_d} - \dot{\boldsymbol \eta}) -  Z^{-1} {\dot Z} Z^{-1}\Lambda ({{\boldsymbol \eta}_d} - {\boldsymbol \eta})\\
+& = {\dot {\boldsymbol \omega}_d} + \Lambda \left( ({\boldsymbol \omega}_d - {\boldsymbol \omega}) -  Z^{-1} {\dot Z} Z^{-1} ({{\boldsymbol \eta}_d} - {\boldsymbol \eta}) \right)\\
+\end{aligned}
+\end{equation}
+The reference angular velocity defined above includes both the desired angular velocity and a position error term. Therefore, it becomes a proportional feedback term to stabilize the quadrotor attitude when the error of the angular velocity is small. Since the matrix \(Z\) is an unitary matrix, \({\dot {\boldsymbol \omega}_r} \) can be simplified as,\\
+\begin{equation}
+\begin{aligned}
+{\dot {\boldsymbol \omega}_r} = {\dot {\boldsymbol \omega}_d} + \Lambda ({\boldsymbol \omega}_d - {\boldsymbol \omega}) - Z^{-1} {\dot Z} Z^{-1} \Lambda ({{\boldsymbol \eta}_d} - {\boldsymbol \eta})
+\end{aligned}
+\end{equation}
+For the implementation of the attitude control, we assume that \( \ddot{\boldsymbol \eta}_d = 0\), and this is equivalent to \({\dot {\boldsymbol \omega}_d} = 0\). The current attitude of the quadrotor \( {\boldsymbol \eta} \) and its derivative \({\dot {\boldsymbol \eta}}\) are estimated by filtered values of the internal magnetometer and the internal gyroscope.
+
+According to the nonlinear attitude controller developed by Bandyopadhyay and Chung, the control law is given by the below equation \cite{Bandyopadhyay16}. \\
+\begin{equation}
+\label{eq:control_law}
+\begin{aligned}
+\boldsymbol{u} = J {\dot {\boldsymbol \omega}_r} - \text{Skew} (J {\boldsymbol \omega}) {\boldsymbol \omega}_r + K_{\omega} ({\boldsymbol \omega}_r - {\boldsymbol \omega}) 
+\end{aligned}
+\end{equation}
+where is \(K_{\omega}\) a positive gain matrix, \\
+\begin{equation}
+\begin{aligned}
+K_{\omega} = 
+\begin{bmatrix}
+{k_{\omega}}_p& 0	 			& 0 \\
+0			& {k_{\omega}}_q	& 0 \\
+0			& 0				& {k_{\omega}}_r
+\end{bmatrix}
+>0
+\end{aligned}
+\end{equation}
+
+In order to prove stability of the nonlinear attitude controller, the Lyapunov method is used. From Equations (\ref{eq:z_omega}) and (\ref{eq:control_law}), the below equations are obtained.\\
+\begin{equation}
+\begin{aligned}
+{\boldsymbol \omega}_r - {\boldsymbol \omega} & = {\boldsymbol \omega}_d -  {\boldsymbol \omega} + Z^{-1} \Lambda  ({\boldsymbol \eta}_d - {\boldsymbol \eta}) \\
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+(\dot{{\boldsymbol \eta}_d} - \dot{\boldsymbol \eta}) - Z({\boldsymbol \omega}_r - {\boldsymbol \omega}) + \Lambda  ({\boldsymbol \eta}_d - {\boldsymbol \eta}) = 0 \\
+\end{aligned}
+\end{equation}
+From equations (\ref{eq:rotation}) and (\ref{eq:control_law}), the below equations can be obtained.\\
+\begin{equation}
+\begin{aligned}
+ J {\dot {\boldsymbol \omega}} -\text{Skew} (J {\boldsymbol \omega}) {\boldsymbol \omega} = J {\dot {\boldsymbol \omega}_r} - {\text {Skew}}(J {\boldsymbol \omega}) {\boldsymbol \omega}_r + K_{\omega}  ({\boldsymbol \omega}_r - {\boldsymbol \omega})
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+J ({\dot {\boldsymbol \omega}_r} - {\dot {\boldsymbol \omega}}) + (K_{\omega} - {\text {Skew}}(J {\boldsymbol \omega})) ({\boldsymbol \omega}_r - {\boldsymbol \omega})
+ = 0 \\
+\end{aligned}
+\end{equation}
+Let \( {{\boldsymbol s}_1} = {\boldsymbol \omega}_r  - {\boldsymbol \omega} \) and \( {{\boldsymbol s}_2} = Z^{-1} ({\boldsymbol \eta}_d - {\boldsymbol \eta}) \). Then, the above equations can be written as, \\
+% \begin{equation}
+% \begin{aligned}
+% \begin{bmatrix}
+% J & 0 \\
+% 0 & I
+% \end{bmatrix}
+% \begin{bmatrix}
+% \dot{{\boldsymbol s}_1} \\
+% \dot{{\boldsymbol s}_2}
+% \end{bmatrix}
+% +
+% \begin{bmatrix}
+% \text{Skew} (J {\boldsymbol \omega}) +  K_{\omega} & 0 \\
+% -Z & \Lambda
+% \end{bmatrix}
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix}
+% =
+% \begin{bmatrix}
+% 0 \\
+% 0
+% \end{bmatrix}
+% \end{aligned}
+% \end{equation}
+\color{blue} %%%%%%%%%%
+\begin{equation}
+\begin{aligned}
+\begin{bmatrix}
+J & 0 \\
+0 & I
+\end{bmatrix}
+\begin{bmatrix}
+\dot{{\boldsymbol s}_1} \\
+\dot{{\boldsymbol s}_2}
+\end{bmatrix}
++
+\begin{bmatrix}
+- \text{Skew} (J {\boldsymbol \omega}) +  K_{\omega} & 0 \\
+-Z & \Lambda
+\end{bmatrix}
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+\color{black} %%%%%%%%%%
+where \(I\) is the \(3 \times 3\) identity matrix. Define a Lyapunov function \( V\) as below, \\
+\begin{equation}
+\begin{aligned}
+V({\boldsymbol s}_1, {\boldsymbol s}_2) = 
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+J & 0 \\
+0 & I
+\end{bmatrix}
+\begin{bmatrix}
+{{\boldsymbol s}_1} \\
+{{\boldsymbol s}_2}
+\end{bmatrix}
+\end{aligned}
+\end{equation}\\
+Since the inertia matrix \(J\), and the identity matrix \( I\) are positive definite, the Lyapunov function \(V({\boldsymbol s}_1, {\boldsymbol s}_2) \) is positive, if \({\boldsymbol s}_1\), \({\boldsymbol s}_2\) are not zeros.
+\begin{equation}
+\begin{aligned}
+V({\boldsymbol s}_1, {\boldsymbol s}_2) & =  {{\boldsymbol s}_1}^{T} J {\boldsymbol s}_1 + {{\boldsymbol s}_2}^{T} I {\boldsymbol s}_2  > 0 \\
+\end{aligned} 
+\end{equation}
+Derivative \({\dot{V}({\boldsymbol s}_1, {\boldsymbol s}_2)}\) of the Lyapunov function is given below, and from the definition of \(K_{\omega}\) and \(\Lambda\), the derivative of the Lypunov function is negative definite, if \({\boldsymbol s}_1\), \({\boldsymbol s}_2\) are not zeros. \\ 
+% \begin{equation}
+% \begin{aligned}
+% \dot{V}({\boldsymbol s}_1, {\boldsymbol s}_2) & = 
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+% \dot{J} & 0 \\
+% 0 & \dot{I}
+% \end{bmatrix}
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix}
+% + 2
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+% J & 0 \\
+% 0 & I
+% \end{bmatrix}
+% \begin{bmatrix}
+% \dot{{\boldsymbol s}_1} \\
+% \dot{{\boldsymbol s}_2}
+% \end{bmatrix} \\
+% & = 2
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+% J & 0 \\
+% 0 & I
+% \end{bmatrix}
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} \\
+% & = 
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+% 2 {\text {Skew}}(J {\boldsymbol \omega}) - 2K_{\omega} & 0 \\
+% 2Z &  -2 \Lambda
+% \end{bmatrix}
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} \\
+% & = 2  {{\boldsymbol{s}}_1}^{T} \text{Skew} (J {\boldsymbol \omega}) {\boldsymbol{s}}_1 - 2 {{\boldsymbol{s}}_1}^{T} K_{\omega} {\boldsymbol{s}}_1 -  2 {{\boldsymbol{s}}_2}^{T} \Lambda {\boldsymbol{s}}_2\\
+% & =  - 2 {{\boldsymbol{s}}_1}^{T} K_{\omega} {\boldsymbol{s}}_1 -  2 {{\boldsymbol{s}}_2}^{T} \Lambda {\boldsymbol{s}}_2\\
+% & < 0 \\
+% \end{aligned}
+% \end{equation} \\
+% From the definition of \(K_{\omega}\) and \(\Lambda\), \(\dot{V} ({\boldsymbol s}_1, {\boldsymbol s}_2)\) is negative, if \({\boldsymbol s}_1\), \({\boldsymbol s}_2\) are not zeros.
+% \begin{equation}
+% \begin{aligned}
+% \dot{V} ({\boldsymbol s}_1, {\boldsymbol s}_2) & =
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+%  2 \text{Skew} (I Z^{-1} \dot{\boldsymbol \eta}) - 2K_{\omega} & 0 \\
+% 2I &  -2 \Lambda
+% \end{bmatrix}
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} \\
+% & = 2 {{\boldsymbol{s}}_1}^{T} \text{Skew} (I Z^{-1} \dot{\boldsymbol \eta}) {\boldsymbol{s}}_1 - 2 {{\boldsymbol{s}}_1}^{T} K_{\omega} {\boldsymbol{s}}_1 -  2 {{\boldsymbol{s}}_2}^{T} \Lambda {\boldsymbol{s}}_2 \\
+% & =  - 2 {{\boldsymbol{s}}_1}^{T} K_{\omega} {\boldsymbol{s}}_1 -  2 {{\boldsymbol{s}}_2}^{T} \Lambda {\boldsymbol{s}}_2\\
+% & < 0 \\
+% \end{aligned}
+% \end{equation}
+\color{blue} %%%%%%%%%%
+\begin{equation}
+\begin{aligned}
+\dot{V}({\boldsymbol s}_1, {\boldsymbol s}_2) & = 
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+\dot{J} & 0 \\
+0 & \dot{I}
+\end{bmatrix}
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix}
++ 2
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+J & 0 \\
+0 & I
+\end{bmatrix}
+\begin{bmatrix}
+\dot{\boldsymbol s}_1 \\
+\dot{\boldsymbol s}_2
+\end{bmatrix} \\
+% & = 
+%  2
+% \begin{bmatrix}
+% {\boldsymbol s}_1 \\
+% {\boldsymbol s}_2
+% \end{bmatrix} ^{T}
+% \begin{bmatrix}
+% J & 0 \\
+% 0 & I
+% \end{bmatrix}
+% \begin{bmatrix}
+% \dot{\boldsymbol s}_1 \\
+% \dot{\boldsymbol s}_2
+% \end{bmatrix} \\
+& =
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+2 {\text {Skew}}(J {\boldsymbol \omega}) - 2K_{\omega} & 0 \\
+2Z &  -2 \Lambda
+\end{bmatrix}
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix}\\
+& = 
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+- 2K_{\omega} & 0 \\
+2Z &  -2 \Lambda
+\end{bmatrix}
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix}\\
+& = 
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+- 2K_{\omega} & Z^{T} \\
+Z &  -2 \Lambda
+\end{bmatrix}
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix}\\
+& =  - 2 {{\boldsymbol{s}'}_1}^{T} K_{\omega} {\boldsymbol{s}'}_1 - 2 {{\boldsymbol{s}'}_2}^{T} \Lambda {\boldsymbol{s}'}_2\\
+& < 0 \\
+\end{aligned}
+\end{equation} \\
+where \({\boldsymbol s'}_1 = U {\boldsymbol s}_1 \), \({\boldsymbol s'}_2 = U {\boldsymbol s}_2 \), and \(U\) is the unitary matrix such that
+\begin{equation}
+\begin{aligned}
+U^{T}
+\begin{bmatrix}
+- 2K_{\omega} & Z^{T} \\
+Z &  -2 \Lambda
+\end{bmatrix}
+U
+=
+\begin{bmatrix}
+- 2K_{\omega} & 0 \\
+0 &  -2 \Lambda
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+\color{black} %%%%%%%%%%
+Hence, by the Lyapunov 2nd method, the controller is globally asymptotic stable with an equilibrium point where \( {\boldsymbol s_1} =  0\), \( {\boldsymbol s_2} =  0\). Therefore, the quadrotor's attitude \({\boldsymbol \eta}\) and angular velocity \({\boldsymbol \omega}\) converge to \({\boldsymbol \eta}_d\) and \({\boldsymbol \omega}_d \), respectively.
+
+Further, define \(c_1 =  \min(J_{xx}, J_{yy}, J_{zz}, 1) \) and \(c_2 =  \max(J_{xx}, J_{yy}, J_{zz}, 1) \), and then, the below condition of the Lyapunov function \({V} ({\boldsymbol s}_1, {\boldsymbol s}_2) \) is satisfied. Here, \({V} ({\boldsymbol s}_1, {\boldsymbol s}_2) \) is radially unbounded. \\
+\begin{equation}
+\begin{aligned}
+\forall {\boldsymbol s}_1, {\boldsymbol s}_2 \neq {\boldsymbol 0}, \quad  c_2 (\|{{\boldsymbol s}_1}\|^2 +\|{{\boldsymbol s}_2}\|^2) > V({\boldsymbol s}_1, {\boldsymbol s}_2) & \approx  {{\boldsymbol s}_1}^{T} J {\boldsymbol s}_1 + {{\boldsymbol s}_2}^{T} I {\boldsymbol s}_2  >  c_1 (\|{{\boldsymbol s}_1}\|^2 +\|{{\boldsymbol s}_2}\|^2) > 0\\
+\end{aligned}
+\end{equation} 
+Also, define \(c_3 = 2 \min(k_{\omega_p}, k_{\omega_q}, k_{\omega_r}, \lambda_{\phi}, \lambda_{\theta}, \lambda_{\psi}) \) and then, the below condition of \(\dot{V} ({\boldsymbol s}_1, {\boldsymbol s}_2) \) is satisfied.
+\begin{equation}
+\begin{aligned}
+\forall {\boldsymbol s}_1, {\boldsymbol s}_2 \neq {\boldsymbol 0}, \quad \dot{V} ({\boldsymbol s}_1, {\boldsymbol s}_2) & \le - c_3 (\|{{\boldsymbol s}_1}\|^2 +\|{{\boldsymbol s}_2}\|^2) < 0
+\end{aligned}
+\end{equation} 
+From the Lyapunov 1st method, the controller is globally exponentially stable as well without perturbation \cite{nonlinear_systems}. Hence it gives bounded errors that can be estimated with respect to bounded disturbance or modeling errors \cite{Bandyopadhyay16}.

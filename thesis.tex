@@ -1,0 +1,362 @@
+%%
+%% This is file `thesis-ex.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% uiucthesis2009.dtx  (with options: `example')
+%% 
+\def\fileversion{v2.25a} \def\filedate{2009/10/10}
+%% Package and Class "uiucthesis2009" for use with LaTeX2e.
+\documentclass[edeposit,fullpage]{uiucthesis2009}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{mathrsfs}   %The amsmath package is included for \xrightarrow
+%\usepackage{natbib}
+%\usepackage {apacite}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\usepackage{wasysym}
+\usepackage{textcomp}
+
+
+
+\begin{document}
+
+\title{Application of a model-based nonlinear attitude control for quadrotor UAVs}
+\author{Mingyo Seo}
+\department{Mechanical Engineering}
+\schools{B.Eng., Tohoku University, 2014}
+\msthesis
+\advisor{Associate Professor Prof. Soon-Jo Chung, Professor Prof. Seth Hutchinson}
+\degreeyear{2016}
+\committee{Professor Seth Hutchinson\\ Associate Professor Soon-Jo Chung}
+\maketitle
+
+\frontmatter
+
+%% Create an abstract that can also be used for the ProQuest abstract.
+%% Note that ProQuest truncates their abstracts at 350 words.
+\begin{abstract}
+
+A quadrotor, a UAV equipped with four rotors, has an advantage of its maneuver, and has been used for various purposes. For this advantage, many researchers have studied a quadrotor's operation. An attitude control system for a quadrotor is one of the most important parts in order to improve the quadrotor's performance.
+
+This thesis developed a quadrotor testbed and applied a model-based nonlinear attitude control, originally designed for a space craft, to the quadrotor. In order to implement a nonlinear attitude control system, the dynamic model of the quadrotor is studied and the quadrotor's physical properties are characterized based on the model. Then, stability and agility of the nonlinear attitude control are validated by both simulations and experiments and its performance is compared with one of an conventional PID attitude control.
+
+Finally, this thesis proposes a computationally-efficient position estimator for the quadrotor's operation. The position estimator detects visual markers of an image from the camera, and computes the quadrotor's position. The position estimator was also evaluated by experiments.
+
+\end{abstract}
+
+%% Create a dedication in italics with no heading, centered vertically
+%% on the page.
+%\begin{dedication}
+%To Father and Mother.
+%\end{dedication}
+
+%% Create an Acknowledgements page, many departments require you to
+%% include funding support in this.
+\chapter*{Acknowledgments}
+The author wishes to express sincere gratitude to Prof. Soon-Jo Chung and Prof. Seth Hutchinson, for their advice and guidance throughout this work. The author gratefully acknowledges the contributions of Elias Waddington to the hardware setup and the experiments reported in Chapters 2 and 4. Chapter 5 was conducted as joint work with Lingyu Ma, and the author would like to express thanks to him for his insightful discussions. 
+% Finally, especially thanks to my family, Nari Kim, Taito Nabeshima, Wookyum Kim, Daniel Cho, Shenyu Liu, JCT members, and CEA members for their support during the process of earning my Master's degree.
+\color{blue}
+Finally, special thanks go to his family, Nari Kim, Taito Nabeshima, Wookyum Kim, Daniel Cho, Shenyu Liu, JCT members, and CEA members for their support during the process of earning his Master's degree.
+\color{black}
+
+%% The thesis format requires the Table of Contents to come
+%% before any other major sections, all of these sections after
+%% the Table of Contents must be listed therein (i.e., use \chapter,
+%% not \chapter*).  Common sections to have between the Table of
+%% Contents and the main text are:
+%%
+%% List of Tables
+%% List of Figures
+%% List Symbols and/or Abbreviations
+%% etc.
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+%% Create a List of Abbreviations. The left column
+%% is 1 inch wide and left-justified
+%\chapter{List of Abbreviations}
+
+%\begin{symbollist*}
+%\item[CA] Caffeine Addict.
+%\item[CD] Coffee Drinker.
+%\end{symbollist*}
+
+%% Create a List of Symbols. The left column
+%% is 0.7 inch wide and centered
+%\chapter{List of Symbols}
+
+%\begin{symbollist}[0.7in]
+%\item[$\tau$] Time taken to drink one cup of coffee.
+%\item[$\mu$g] Micrograms (of caffeine, generally).
+%\end{symbollist}
+
+\mainmatter
+\input{Introduction}
+
+\input{system}
+
+\input{control_system}
+
+\input{evaluation}
+
+\input{vision_based_control}
+
+\input{conclusions}
+
+
+\appendix*
+
+\include{Appendix.tex}
+
+\backmatter
+
+\begin{thebibliography}{9}
+
+\bibitem{icao16} 
+I. C. A. O. Cir,
+"328 AN/190",
+Unmanned Aircraft Systems (UAS) Circular,
+2011.
+
+\bibitem{Hoffmann07} 
+G. M. Hoffmann, H. Huang, S. L. Waslander, and C. J. Tomlin,
+"Quadrotor Helicopter Flight Dynamics and Control: Theory and Experiment?"
+\textit{Proc. of the AIAA Guidance, Navigation, and Control Conference},
+ vol. 2. Aug 2007.
+
+\bibitem{Michael02}
+N. Michael, S. Shen, K. Mohta, Y. Mulgaonkar, V. Kumar, K. Nagatni, Y. Okada, S. Kiribayashi, K. Otake, K. Yashida, and K. Ohno
+"Collaborative Mapping of an Earthquake-Damaged Building via Ground and Aerial Robots," 
+\textit{Journal of Field Robotics},
+vol. 29, no. 5, Aug. 2012, pp. 832-841.
+
+\bibitem{Chambers11}
+A. Chambers, S. Achar, S. Nuske, J. Rehder, B. Kitt, L. Chamberlain, J. Haines, S. Scherer, and S. Singh,
+"Perception for a River Mapping Robot,"
+\textit{In Intelligent Robots and Systems (IROS), 2011 IEEE/RSJ International Conference on}, 
+IEEE, Sep 2011, pp. 227-234.
+
+\bibitem{Raffo08}
+G. V. Raffo, M. G. Ortega, and F. R. Rubio,
+"Backstepping/Nonlinear \({\mathscr{H}}_{\infty}\) Control for Path Tracking of a Quadrotor Unmanned Aerial Vehicle,"
+\textit{In American Control Conference, 2008}, 
+IEEE, Jun 2008, pp. 3356-3361.
+
+\bibitem{Morgan16}
+D. Morgan, G. P. Subramanian, S. . Chung, and F. Y. Hadaegh,
+"Swarm Assignment and Trajectory Optimization Using Variable-Swarm, Distributed Auction Assignment and Sequential Convex Programming," 
+\textit{The International Journal of Robotics Research},
+Feb. 2016. 0278364916632065.
+
+\bibitem{Mallikarjunan12}
+S. Mallikarjunan, B. Nesbitt, E. Kharisov, E. Xargay, N. Hovakimyan, and Chengyu Cao,
+"L1 Adaptive Controller for Attitude Control of Multirotors,"
+\textit{In AIAA Guidance, Navigation and Control Conference, Minneapolis}, 
+AIAA-2012-4831. 2012.
+
+ \bibitem{Diao11}
+ C. Diao, B. Xian, Q. Yin, W. Zeng, H. Li, and Y. Yang,
+"A Nonlinear Adaptive Control Approach for Quadrotor UAVs,"
+ \textit{In Control Conference (ASCC), 2011 8th Asian}, 
+ IEEE, May 2011, pp. 223-228.
+ 
+ \bibitem{Ritz11}
+ R. Ritz, Robin, M. Hehn, S. Lupashin, and R. D'Andrea.
+"Quadrocopter Performance Benchmarking Using Optimal Control,"
+\textit{In Intelligent Robots and Systems (IROS), 2011 IEEE/RSJ International Conference on}, 
+ IEEE, Sep 2011, pp. 5179-5186.
+ 
+ \bibitem{Mellinger12}
+ D. Mellinger, N. Michael, and V. Kumar,
+"Trajectory Generation and Control for Precise Aggressive Maneuvers with Quadrotors,"
+\textit{The International Journal of Robotics Research},
+Jan 2012, 0278364911434236.
+ 
+ \bibitem{Dierks10}
+T. Dierks, and J. Sarangapani,
+"Output Feedback Control of a Quadrotor UAV Using Neural Networks,"
+\textit{Neural Networks, IEEE Transactions on},
+vol. 21, no. 1, 2010 Jan, pp. 50-66.
+
+ \bibitem{bitcraze}
+"Crazyflie"
+\url{http://www.bitcraze.io} [Retrieved 15 April 2016]
+ 
+ \bibitem{Bandyopadhyay16}
+B. Saptarshi, S.-J. Chung, and F. Y. Hadaegh,
+"Nonlinear Attitude Control of Spacecraft with a Large Captured Object,"
+\textit{Journal of Guidance, Control, and Dynamics},
+vol. 39, no. 4, Jan 2016  pp. 754-769.
+
+\bibitem{motor}
+"3D Robotics Motor AC2830-358,"
+\url{http://store.3drobotics.com/products/motor-ac2830-358-850kv-1} [Retrieved 22 Sep 2015]
+
+\bibitem{esc}
+"3D Robotics ESC 20 Amp with SimonK,"
+\url{http://store.3drobotics.com/products/esc-20-amp-SimonK-1} [Retrieved 22 Sep 2015]
+
+\bibitem{airfoil}
+"UIUC Airfoil Coordinates Database,"
+\url{http://m-selig.ae.illinois.edu/ads/coord_database.html} [Retrieved 24 Aug 2015]
+
+\bibitem{apc}
+"APC Propellers,"
+\url{http://www.apcprop.com/ProductDetails.asp?ProductCode=LP10047SF} [Retrieved 24 Aug 2015]
+
+\bibitem{px4}
+"PX4,"
+\url{http://dev.px4.io}
+[Retrieved 15 May 2016]
+
+\bibitem{3dr}
+"3D Robotics Pixhawk,"
+\url{http://store.3dr.com/products/3dr-pixhawk}
+[Retrieved 15 May 2016]
+
+\bibitem{pixhawk}
+"Pixhawk Autopilot,"
+\url{http://pixhawk.org/modules/pixhawk}
+[Retrieved 15 May 2016]
+
+\bibitem{hardkernel}
+"Hardkernel,"
+\url{http://www.hardkernel.com}
+[Retrieved 15 May 2016]
+
+\bibitem{radio}
+"3D Robotics Radio Set V2,"
+\url{http://store.3dr.com/products/3dr-radio-set}
+[Retrieved 22 Sep 2015]
+
+\bibitem{spektrum}
+"Spektrum RC,"
+\url{http://www.spektrumrc.com/Products/Default.aspx?ProdID=SPMAR610}
+[Retrieved 27 May 2016]
+
+\bibitem{qgroundcontrol}
+"QGround Control,"
+\url{http://qgroundcontrol.org/mavlink/start}
+[Retrieved 27 May 2016]
+
+\bibitem{mavros}
+"MAVROS - ROS Wiki,"
+\url{http://wiki.ros.org/mavros} 
+[Retrieved 27 May 2016]
+
+\bibitem{intro_to_robotics}
+J. J. Craig, 
+"Spatial descriptions and transformations,"
+\textit{Introduction to Robotics: Mechanics and Control},
+vol.3, Upper Saddle River: Pearson Prentice Hall, 2005, ch.2, pp. 19-51, 
+
+\bibitem{Diebel06}
+J. Diebel
+"Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors,"
+\textit{Matrix},
+vol. 58 no. 15-16, Oct 2006, pp. 1-35.
+
+\bibitem{randal08}
+B. Randal,
+"Quadrotor Dynamics and Control Rev 0.1,"
+Feb 2008.
+
+\bibitem{giri}
+G. P. Subramanian, 
+"Nonlinear Control Strategies for Quadrotors and Cubesats,"
+M.S. Thesis, Department of Aerospace Engineering, University of Illinois at Urbana-Champaign, Urbana, IL, 2015.
+
+\bibitem{Bolandi13}
+H. Bolandi, M. Rezaei, R. Mohsenipour, H. Nemati, and S. M. Smailzadeh,
+"Attitude Control of a Quadrotor with Optimized PID Controller,"
+\textit{Intelligent Control and Automation}, 
+vol. 4, no. 3, Aug 2013, pp. 335-342.
+
+\bibitem{nonlinear_systems}
+H. K. Khalil, and J. W. Grizzle,
+"Lyapunov Stability,"
+\textit{Nonlinear systems},
+3rd ed. New Jersey: Prentice hall, 1996. pp. ch. 4, sec. 5, pp. 154-155.
+
+\bibitem{airfoil2}
+"UIUC Propeller Data Site,"
+\url{http://m-selig.ae.illinois.edu/props/propDB.html} [Retrieved 24 Aug 2015]
+
+\bibitem{audio}
+K. C. Pohlmann,
+"Pulse Modulation and Sampling Systems"
+\textit{Advanced digital audio},
+Sams, 1991. ch. 2, pp. 21-53.
+
+ \bibitem{Mahfouz13}
+ A. A. Mahfouz, M. K. Mohammed, and F. A. Salem,
+ "Modeling, Simulation and Dynamics Analysis Issues of Electric Motor, for Mechatronics Applications, Using Different Approaches and Verification by MATLAB/Simulink,"
+\textit{International Journal of Intelligent Systems and Applications},
+ vol. 5, no.5 May 2013 pp. 39-57.
+
+\bibitem{chung13}
+S.-J. Chung, S. Bandyopadhyay, I. Chang, and F. Y. Hadaegh, 
+"Phase Synchronization Control of Complex Networks of Lagrangian Systems on Adaptive Digraphs,"
+\textit{Automatica}, 
+vol. 49, no. 5, May 2013, pp. 1148-1161.
+
+\bibitem{irl}
+"Intelligent Robotics Laboratory,"
+\url{http://robotics.illinois.edu}
+[Retrieved 18 Apr 2016]
+
+\bibitem{vicon}
+"Vicon Motion Capture System,"
+\url{http://www.vicon.com} [Retrieved 18 Apr 2016]
+
+\bibitem{gml}
+V. Vezhnevets, A. Velizhev, A. Yakubenko, and N. Chetverikov,
+"GML C++ Camera Calibration Toolbox,"
+\url{http://graphics.cs.msu.ru/en/node/909}
+[Retrieved 13 Jan 2016]
+
+\bibitem{caltech_calib}
+"Camera Calibration Toolbox for Matlab,"
+\url{http://www.vision.caltech.edu/bouguetj/calib_doc} 
+[Retrieved 15 Apr 2016]
+
+\bibitem{opencv}
+"OpenCV 2.4.12.0 documentation,"
+\url{http://docs.opencv.org/2.4/doc/tutorials/imgproc/shapedescriptors/find_contours/find_contours.html}
+[Retrieved 13 Jan 2016]
+
+\bibitem{Haralick94}
+B. M. Haralick, C. N. Lee, K. Ottenberg, M. Nölle, 
+"Review and Analysis of Solutions of the Three Point Perspective Pose Estimation Problem,"
+\textit{International journal of computer vision},
+vol. 1, no. 3, Dec 1994, pp. 331-356.
+
+\bibitem{Paranjape15}
+A. A. Paranjape, K. C. Meier, X. Shi, S.-J. Chung, and S. Hutchinson,
+"Motion Primitives and 3D Path Planning for Fast Flight through a Forest,"
+\textit{The International Journal of Robotics Research},
+vol. 34, no. 3, Mar 2015, pp. 357-377
+
+\bibitem{Morgan14}
+D. Morgan, S.-J. Chung, and F. Y. Hadaegh, 
+"Model Predictive Control of Swarms of Spacecraft Using Sequential Convex Programming,"
+\textit{Journal of Guidance, Control, and Dynamics},
+vol. 37, no. 6, Apr 2014, pp. 1725-1740.
+
+\bibitem{motion_planning}
+H. M. Choset, K. M. Lynch, S. Hutchinson, S. Thrun, L. E. Kavraki, and W. Burgard, 
+\textit{Principles of Robot Motion: Theory, Algorithms, and Implementation}, 
+MIT press, 2005.
+
+\end{thebibliography}
+
+\end{document}
+\endinput
+%%
+%% End of file `thesis-ex.tex'.

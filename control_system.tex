@@ -1,0 +1,98 @@
+\chapter{Control System}
+\label{ch:control_system}
+
+The control system is one of the most important parts in the quadrotor's operation. In this research, we implemented a nonlinear attitude control system based on a dynamic model of the quadrotor. In this chapter, coordinate systems for the quadrotor's control are defined, the dynamic model of the quadrotor is introduced, and the control system is described.
+
+\section{Control System Overview}
+\label{sec:control_system_system_overview}
+
+The overview of the control system is illustrated in Figure \ref{fig:bode}. First, the outer-loop controller receives desired position and desired attitude. Then, the outer-loop controller receives current state data from the sensors, and computes desired attitude and thrust corresponding to position errors of the quadrotor. The current position is estimated by synchronization of the internal accelerometer and barometer sensors, and other external sensors, such as a camera and a motion capture system. The inner-loop controller receives the quadrotor's attitude and angular velocity from the onboard gyroscope and magnetometer, and computes desired torque to control the attitude. The quadrotor's current attitude is measured by the internal magnetometer and angular velocity is measured by the internal gyroscope. Finally, the mixer, an open-loop motor controller, receives the desired thrust from the outer-loop controller and the desired torque from the inner-loop controller. Then, the mixer maps the desired thrust and torque into desired motor speeds, and estimates desired voltage of each motor.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{graphics/bode_diagram.pdf}
+    \caption{Illustration of the Control System.}
+    \label{fig:bode}
+\end{figure}
+
+\section{Coordinate System}
+\label{sec:coordinate_system}
+
+In order to control the motion and state of the quadrotor, coordinate systems must be defined for the state and motion representation.\cite{intro_to_robotics} %john craig
+First, a reference coordinate system must be defined to describe the orientation and position of the quadrotor. The reference coordinate system is called an "inertial coordinate system". Commonly, an inertial coordinate system is defined to be a Cartesian coordinate system that has its x, y-plane fixed on the ground. For convenience of control, the z-axis of the quadrotor is defined to face the ground. The origin can be arbitrarily set, but it is defined to be the initial position of the quadrotor in this research. 
+
+In addition, it helps description of the quadrotor's motion to define a body-attached coordinate system since the onboard sensors of the quadrotor are fixed on the quadrotor's frame. In the quadrotor system, the body coordinate system follows the convention; the x, y-axises are defined to be parallel to the quadrotor's frame, and the z-axis is defined to be downward. The origin is set to be at the center of the autopilot controller, approximately at the center of mass.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphics/coordinate.pdf}
+    \caption{Illustration of the Inertial and Body Frames.}
+    \label{fig:frame}
+\end{figure}
+
+Using the above coordinate systems, the quadrotor motion is represented completely. The mapping of the origin in the body frame into the inertial frame represents the quadrotor position. The orientation of the body frame is represented by multiple methods, such as the X-Y-Z fixed angles convention and the Z-Y-X Euler angles convention. In this research, the Z-Y-X Euler angles convention, also known as the Tait-Bryan angles convention, is used \cite{Diebel06}. In the Z-Y-X Euler angle convention, the mapping into the body frame starts with rotating about the z-axis by a yaw angle \(\psi\). Rotation of the y-axis by a pitch angle \(\theta\), and the z-axis by a roll angle \(\phi\) are followed in order. The transformation matrix of an orientation from the body frame into the inertial frame is given as,\\
+\begin{equation}
+\label{eq:transform_matrix}
+\begin{aligned}
+{^I _B}R
+& = {R_{z, \psi}}  {R_{y, \theta}} {R_{x, \phi}}\\
+& =
+\begin{bmatrix}
+\cos{\psi} & -\sin{\psi} & 0 \\
+\sin{\psi} & \cos{\psi} & 0\\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\theta} & 0& \sin{\theta} \\
+0 & 1 & 0 \\
+-\sin{\theta} & 0 & \cos{\theta}
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 0\\
+0& \cos{\phi} & -\sin{\phi} \\
+0 & \sin{\phi} & \cos{\phi} \\
+\end{bmatrix}\\
+& =
+\begin{bmatrix}
+\cos{\theta} \cos{\psi} & \sin{\phi} \sin{\theta} \cos{\psi} - \cos{\phi}\sin{\psi} & \cos{\phi} \sin{\theta} \cos{\psi} + \sin{\phi} \sin{\psi}\\
+\cos{\theta} \sin{\psi} & \sin{\phi} \sin{\theta} \sin{\psi} + \cos{\phi}\cos{\psi} & \cos{\phi} \sin{\theta} \sin{\psi} - \sin{\phi} \cos{\psi}\\
+-\sin{\theta} &  \sin{\phi} \cos{\theta} & \cos{\phi} \cos{\theta}
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+and the inverse transformation is given as,\\
+\begin{equation}
+\begin{aligned}
+{^B _I}R
+& = {{^B _I}R}^{-1}\\
+& = {R_{x, \phi}}^{T}  {R_{y, \theta}}^{T} {R_{z, \psi}}^{T}\\
+&=
+\begin{bmatrix}
+1 & 0 & 0\\
+0& \cos{\phi} & \sin{\phi} \\
+0 & - \sin{\phi} & \cos{\phi} \\
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\theta} & 0& - \sin{\theta} \\
+0 & 1 & 0 \\
+\sin{\theta} & 0 & \cos{\theta}
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\psi} & \sin{\psi} & 0 \\
+-\sin{\psi} & \cos{\psi} & 0\\
+0 & 0 & 1
+\end{bmatrix}\\
+& =
+\begin{bmatrix}
+  \cos{\theta} \cos{\psi}  &  \cos{\theta} \sin{\psi} & - \sin{\theta}  \\
+\sin{\phi} \sin{\theta} \cos{\psi} - \cos{\phi} \sin{\psi} & \sin{\phi} \sin{\theta} \sin{\psi} + \cos{\phi} \cos{\psi} & \sin{\phi} \cos{\theta} \\
+\cos{\phi} \sin{\theta} \cos{\psi}  +  \sin{\phi} \sin{\psi} & \cos{\phi} \sin{\theta} \sin{\psi}- \sin{\phi} \cos{\psi} & \cos{\phi}\cos{\theta}
+\end{bmatrix}\\
+\end{aligned}
+\end{equation}
+
+\input{outer_loop}
+
+\input{inner_loop}
+
+\input{motor_control}

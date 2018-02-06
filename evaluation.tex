@@ -1,0 +1,60 @@
+\chapter{Evaluation of the Control System}
+\label{ch:evaluation}
+
+In this chapter, in order to validate the advantage of the control system stated in Chapter \ref{ch:control_system}, the nonlinear attitude control and an conventional PID attitude control are compared with each other, by simulation and flight experiments. First, the PID attitude control used for comparison and its linear mapping model are described. Then, the simulation setup is explained, and the simulation results of the two control systems are presented. Finally, the experimental setup is described, and the trajectory results of the two control systems are analyzed and discussed.
+
+\section{Linear Attitude Control for Comparison}
+\label{sec:pid}
+
+To compare with the nonlinear control system of Chapter \ref{ch:control_system}, a conventional inner-loop controller is also tested for comparison. In the linear controller, derivative of desired attitude \( \dot{ {\boldsymbol \eta}_d } \) is also computed as described in Subsection \ref{subsec:desired_attitude}. Similarly, the reference angular velocity \({\boldsymbol \omega}_r = (p_r, q_r, r_r)\) is given as the below equation.\\
+\begin{equation}
+\begin{aligned}
+{\boldsymbol \omega}_r & = Z^{-1} \dot{\boldsymbol \eta}_r \\
+&  = Z^{-1} \dot{ {\boldsymbol \eta}_d } +  Z^{-1} \Lambda ({\boldsymbol \eta}_d - {\boldsymbol \eta})\\
+\end{aligned}
+\end{equation}
+
+However, instead of Equation (\ref{eq:control_law}) of the nonlinear control system, PID control with respect to the quadrotor's angular velocity is applied to the linear controller. For convenience, we assumed that the derivative of the reference angular velocity is zero. The control law is given as,\\
+\begin{equation}
+\begin{aligned}
+{u_p} & = {{k_P}_{\phi}}(p_r - {p}) + {{k_D}_{\phi}}{\dot {p}} + {{k_I}_{\phi}} \int_{t_0}^{t} {(p_r - {p})} dt\\
+{u_q} & = {{k_P}_{\theta}}(q_r - {q}) + {{k_D}_{\theta}}{\dot {q}} + {{k_I}_{\theta}} \int_{t_0}^{t} {(q_r - {q})} dt\\
+{u_r} & = {{k_P}_{\psi}}(r_r - {r}) + {{k_D}_{\psi}}{\dot {r}} + {{k_I}_{\psi}} \int_{t_0}^{t} {(r_r - {r})} dt\\
+\end{aligned}
+\end{equation}
+Also, the mixer uses more simplified linear model as below, instead of Equation (\ref{eq:n_u}). The matrix for mapping the desired torques into desired motor speed is constant as the below equations.
+\begin{equation}
+\begin{aligned}
+\begin{bmatrix}
+n_1\\
+n_2\\
+n_3\\
+n_4
+\end{bmatrix}
+= M^{-1}
+\begin{bmatrix}
+k_f F_d\\
+u_p\\
+u_q\\
+u_r
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+where \(k_f\) is a gain for the scale of thrust, and \(M\) is defined as, \\
+\begin{equation}
+\begin{aligned}
+M = 
+\begin{bmatrix}
+1 				& 1				& 1				& 1 \\
+- {1\over{\sqrt{2}}}	&   {1\over{\sqrt{2}}}	& {1\over{\sqrt{2}}}	& - {1\over{\sqrt{2}}} \\
+  {1\over{\sqrt{2}}}	& - {1\over{\sqrt{2}}}	& {1\over{\sqrt{2}}}	& - {1\over{\sqrt{2}}} \\
+1				& 1				& - 1				& -1\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+The matrix \(M\) represents only the proportional effect of each motor on torques and thrusts due to the geometry of the frame. Other physical factors, such as motor dynamics, are ignored as tuning the gains of the attitude PID control.
+
+
+\input{simulation}
+
+\input{experiment}

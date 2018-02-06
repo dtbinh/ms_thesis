@@ -1,0 +1,58 @@
+\contentsline {chapter}{List of Tables}{vi}{chapter*.3}
+\contentsline {chapter}{List of Figures}{vii}{chapter*.4}
+\contentsline {chapter}{Chapter\ 1\hskip 1em\relax Introduction}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Background}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Related Works}{1}{section.1.2}
+\contentsline {section}{\numberline {1.3}Motivation}{2}{section.1.3}
+\contentsline {section}{\numberline {1.4}Objective}{3}{section.1.4}
+\contentsline {section}{\numberline {1.5}Outline}{3}{section.1.5}
+\contentsline {chapter}{Chapter\ 2\hskip 1em\relax System and Hardware Description}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1}Hardware Requirements}{5}{section.2.1}
+\contentsline {section}{\numberline {2.2}Hardware Specification}{6}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Frame}{6}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Actuator Motors}{7}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Propeller}{9}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}Autopilot}{9}{subsection.2.2.4}
+\contentsline {subsection}{\numberline {2.2.5}Companion Single-Board Computer}{9}{subsection.2.2.5}
+\contentsline {subsection}{\numberline {2.2.6}Camera}{10}{subsection.2.2.6}
+\contentsline {subsection}{\numberline {2.2.7}Wireless Communication Interface}{11}{subsection.2.2.7}
+\contentsline {subsection}{\numberline {2.2.8}Ground Control Station}{11}{subsection.2.2.8}
+\contentsline {section}{\numberline {2.3}System Overview}{13}{section.2.3}
+\contentsline {section}{\numberline {2.4}Physical Properties}{18}{section.2.4}
+\contentsline {chapter}{Chapter\ 3\hskip 1em\relax Control System}{21}{chapter.3}
+\contentsline {section}{\numberline {3.1}Control System Overview}{21}{section.3.1}
+\contentsline {section}{\numberline {3.2}Coordinate System}{21}{section.3.2}
+\contentsline {section}{\numberline {3.3}Outer-Loop Controller}{24}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Dynamics Description}{24}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Computation of Desired Velocity}{26}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Computation of Desired Thrust and Attitude}{26}{subsection.3.3.3}
+\contentsline {section}{\numberline {3.4}Inner-Loop Controller}{28}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Dynamics Description}{28}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Computation of Derivative of the Desired Attitude}{29}{subsection.3.4.2}
+\contentsline {subsection}{\numberline {3.4.3}Computation of Desired Torque}{31}{subsection.3.4.3}
+\contentsline {section}{\numberline {3.5}Motor Control}{34}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Mapping Attitude and Thrust Control into Motor Speeds}{34}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}Approximation of the Aerodynamic Coefficient Matrix}{37}{subsection.3.5.2}
+\contentsline {subsection}{\numberline {3.5.3}Motor Control}{38}{subsection.3.5.3}
+\contentsline {chapter}{Chapter\ 4\hskip 1em\relax Evaluation of the Control System}{42}{chapter.4}
+\contentsline {section}{\numberline {4.1}Linear Attitude Control for Comparison}{42}{section.4.1}
+\contentsline {section}{\numberline {4.2}Simulation Study for Inner-loop Controller}{43}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Simulation Setup}{43}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Results}{44}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}Discussion}{44}{subsection.4.2.3}
+\contentsline {section}{\numberline {4.3}Flight Experiment}{47}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Motion Capture Arena}{47}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Motion Capture System}{48}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}Experiment Setup}{50}{subsection.4.3.3}
+\contentsline {subsection}{\numberline {4.3.4}Experiment Results}{50}{subsection.4.3.4}
+\contentsline {subsection}{\numberline {4.3.5}Discussion}{51}{subsection.4.3.5}
+\contentsline {chapter}{Chapter\ 5\hskip 1em\relax Vision-based Position Estimator}{60}{chapter.5}
+\contentsline {section}{\numberline {5.1}Camera Calibration}{60}{section.5.1}
+\contentsline {section}{\numberline {5.2}Marker Detection}{62}{section.5.2}
+\contentsline {section}{\numberline {5.3}Position Estimation}{64}{section.5.3}
+\contentsline {section}{\numberline {5.4}Evaluation Experiment}{65}{section.5.4}
+\contentsline {subsection}{\numberline {5.4.1}Experimental Setup}{65}{subsection.5.4.1}
+\contentsline {subsection}{\numberline {5.4.2}Results}{66}{subsection.5.4.2}
+\contentsline {subsection}{\numberline {5.4.3}Discussion}{66}{subsection.5.4.3}
+\contentsline {chapter}{Chapter\ 6\hskip 1em\relax Conclusion}{69}{chapter.6}
+\contentsline {chapter}{References}{71}{appendix*.6}
