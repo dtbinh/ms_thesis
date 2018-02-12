@@ -480,20 +480,20 @@ J & 0 \\
 \dot{\boldsymbol s}_1 \\
 \dot{\boldsymbol s}_2
 \end{bmatrix} \\
-% & = 
-%  2
-% \begin{bmatrix}
-% {\boldsymbol s}_1 \\
-% {\boldsymbol s}_2
-% \end{bmatrix} ^{T}
-% \begin{bmatrix}
-% J & 0 \\
-% 0 & I
-% \end{bmatrix}
-% \begin{bmatrix}
-% \dot{\boldsymbol s}_1 \\
-% \dot{\boldsymbol s}_2
-% \end{bmatrix} \\
+& = 
+2
+\begin{bmatrix}
+{\boldsymbol s}_1 \\
+{\boldsymbol s}_2
+\end{bmatrix} ^{T}
+\begin{bmatrix}
+J & 0 \\
+0 & I
+\end{bmatrix}
+\begin{bmatrix}
+\dot{\boldsymbol s}_1 \\
+\dot{\boldsymbol s}_2
+\end{bmatrix} \\
 & =
 \begin{bmatrix}
 {\boldsymbol s}_1 \\
@@ -520,19 +520,6 @@ J & 0 \\
 {\boldsymbol s}_1 \\
 {\boldsymbol s}_2
 \end{bmatrix}\\
-& = 
-\begin{bmatrix}
-{\boldsymbol s}_1 \\
-{\boldsymbol s}_2
-\end{bmatrix} ^{T}
-\begin{bmatrix}
-- 2K_{\omega} & Z^{T} \\
-Z &  -2 \Lambda
-\end{bmatrix}
-\begin{bmatrix}
-{\boldsymbol s}_1 \\
-{\boldsymbol s}_2
-\end{bmatrix}\\
 & =  - 2 {{\boldsymbol{s}'}_1}^{T} K_{\omega} {\boldsymbol{s}'}_1 - 2 {{\boldsymbol{s}'}_2}^{T} \Lambda {\boldsymbol{s}'}_2\\
 & < 0 \\
 \end{aligned}
@@ -542,8 +529,8 @@ where \({\boldsymbol s'}_1 = U {\boldsymbol s}_1 \), \({\boldsymbol s'}_2 = U {\
 \begin{aligned}
 U^{T}
 \begin{bmatrix}
-- 2K_{\omega} & Z^{T} \\
-Z &  -2 \Lambda
+- 2K_{\omega} & 0 \\
+2Z &  -2 \Lambda
 \end{bmatrix}
 U
 =
